@@ -1,0 +1,235 @@
+# Basic Config
+esphome:
+  name: kc868-a6
+esp32:
+  board: esp32dev
+
+# WiFi Configuration
+wifi:
+  ssid: "<ssid>"
+  password: "<wifi_password>"
+  
+  # Enable fallback hotspot in case of connection failure
+  ap:
+    ssid: "KC868-A6 Fallback"
+    password: "<fallback_password>"
+
+# Enable captive portal for easy WiFi setup
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "<encryption_key>"
+
+# Enable OTA updates
+ota:
+  - platform: esphome
+    password: "<ota_password>"
+
+# Serial interfaces
+uart:
+  - id: rs485
+    tx_pin: 27
+    rx_pin: 14
+    baud_rate: 9600
+  - id: rs232
+    tx_pin: 17
+    rx_pin: 16
+    baud_rate: 9600
+
+# SPI interface
+spi:
+  clk_pin: 18
+  mosi_pin: 23
+  miso_pin: 19
+  # cs pin: 5
+
+# I2C Configuration
+i2c:
+  sda: 4
+  scl:
+    number: 15
+    ignore_strapping_warning: true
+
+# PCF8574 I/O Expanders
+pcf8574:
+  - id: inputs
+    address: 0x22
+  - id: outputs
+    address: 0x24
+
+# Real-time clock
+time:
+  - platform: ds1307
+    id: rtc_time
+
+# Input sensors
+binary_sensor:
+  - platform: gpio
+    name: "KC868-A6-IN-1"
+    id: input_1
+    pin:
+      pcf8574: inputs
+      number: 0
+      mode: INPUT
+      inverted: true
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - switch.toggle: relay_1
+      
+  - platform: gpio
+    name: "KC868-A6-IN-2"
+    id: input_2
+    pin:
+      pcf8574: inputs
+      number: 1
+      mode: INPUT
+      inverted: true
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - switch.toggle: relay_2
+      
+  - platform: gpio
+    name: "KC868-A6-IN-3"
+    id: input_3
+    pin:
+      pcf8574: inputs
+      number: 2
+      mode: INPUT
+      inverted: true
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - switch.toggle: relay_3
+      
+  - platform: gpio
+    name: "KC868-A6-IN-4"
+    id: input_4
+    pin:
+      pcf8574: inputs
+      number: 3
+      mode: INPUT
+      inverted: true
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - switch.toggle: relay_4
+      
+  - platform: gpio
+    name: "KC868-A6-IN-5"
+    id: input_5
+    pin:
+      pcf8574: inputs
+      number: 4
+      mode: INPUT
+      inverted: true
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - switch.toggle: relay_5
+      
+  - platform: gpio
+    name: "KC868-A6-IN-6"
+    id: input_6
+    pin:
+      pcf8574: inputs
+      number: 5
+      mode: INPUT
+      inverted: true
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - switch.toggle: relay_6
+
+# Relay outputs
+switch:
+  - platform: gpio
+    name: "KC868-A6-RELAY-1"
+    id: relay_1
+    pin:
+      pcf8574: outputs
+      number: 0
+      mode: OUTPUT
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    
+  - platform: gpio
+    name: "KC868-A6-RELAY-2"
+    id: relay_2
+    pin:
+      pcf8574: outputs
+      number: 1
+      mode: OUTPUT
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    
+  - platform: gpio
+    name: "KC868-A6-RELAY-3"
+    id: relay_3
+    pin:
+      pcf8574: outputs
+      number: 2
+      mode: OUTPUT
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    
+  - platform: gpio
+    name: "KC868-A6-RELAY-4"
+    id: relay_4
+    pin:
+      pcf8574: outputs
+      number: 3
+      mode: OUTPUT
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    
+  - platform: gpio
+    name: "KC868-A6-RELAY-5"
+    id: relay_5
+    pin:
+      pcf8574: outputs
+      number: 4
+      mode: OUTPUT
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    
+  - platform: gpio
+    name: "KC868-A6-RELAY-6"
+    id: relay_6
+    pin:
+      pcf8574: outputs
+      number: 5
+      mode: OUTPUT
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF
+
+# Add web server for easy debugging and manual control
+web_server:
+  port: 80
+
+# Status LED to indicate device state
+status_led:
+  pin:
+    number: 2  # On-board LED for most ESP32 dev boards
+    inverted: true
+
+# System information sensors
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+  
+  - platform: uptime
+    name: "Uptime"
