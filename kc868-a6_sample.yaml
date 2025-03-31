@@ -1,18 +1,18 @@
 # Basic Config
 esphome:
-  name: kc868-a6
+  name: !secret name
 esp32:
   board: esp32dev
 
 # WiFi Configuration
 wifi:
-  ssid: "<ssid>"
-  password: "<wifi_password>"
-  
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
   # Enable fallback hotspot in case of connection failure
   ap:
-    ssid: "KC868-A6 Fallback"
-    password: "<fallback_password>"
+    ssid: !secret fallback_ssid
+    password: !secret fallback_password
 
 # Enable captive portal for easy WiFi setup
 captive_portal:
@@ -23,12 +23,12 @@ logger:
 # Enable Home Assistant API
 api:
   encryption:
-    key: "<encryption_key>"
+    key: !secret api_encryption_key
 
 # Enable OTA updates
 ota:
   - platform: esphome
-    password: "<ota_password>"
+    password: !secret ota_password
 
 # Serial interfaces
 uart:
@@ -218,6 +218,15 @@ switch:
 # Add web server for easy debugging and manual control
 web_server:
   port: 80
+  auth:
+    username: !secret web_username
+    password: !secret web_password
+
+# MQTT (if used)
+mqtt:
+  broker: !secret mqtt_broker
+  username: !secret mqtt_username
+  password: !secret mqtt_password
 
 # Status LED to indicate device state
 status_led:
