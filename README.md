@@ -1,10 +1,11 @@
 # KC868-A6 ESPHome Integration
 
 ## Overview
-This project provides a comprehensive ESPHome configuration for the KC868-A6 relay controller board, 
+This project provides ESPHome configuration for the KC868-A6 relay controller board, 
 enabling seamless integration with Home Assistant and other smart home platforms. 
 
 The KC868-A6 features 6 relay outputs and 6 digital inputs, making it perfect for home automation projects like lighting control, appliance automation, and more.
+Current implementation is using 6 digital inputs as switches which control relay states (turning on/off).
 
 ## Features
 
@@ -15,6 +16,7 @@ The KC868-A6 features 6 relay outputs and 6 digital inputs, making it perfect fo
 - ✅ Wi-Fi connectivity with fallback AP
 - ✅ OTA (Over-the-Air) updates
 - ✅ Home Assistant API integration with encryption
+- ✅ MQTT integration
 - ✅ Web server for direct control
 - ✅ Status LED for visual feedback
 - ✅ System monitoring (WiFi signal, uptime)
@@ -32,9 +34,10 @@ For more details check https://devices.esphome.io/devices/KinCony-KC868-A6
 # Kincony KC868-A6 firmware upload
 ![Alt text](https://devices.esphome.io/static/3b5b4421510fc5f23252af03ecde6091/e46b2/KC868-A6.webp?raw=true "KC868-A6")
 
-1. Connect the board with a USB-C cable to your commputer. 
+1. Connect the board with a USB-C cable to your computer. 
 2. While pressing the S2 switch, attach the external power supply (12V) to the board
-3. Use esphome to upload new firmware
+3. Let go of the S2 switch 
+4. Use esphome to upload new firmware
 
 ## Installation
 
@@ -55,32 +58,15 @@ For more details check https://devices.esphome.io/devices/KinCony-KC868-A6
 
 Before flashing the firmware, you need to customize the configuration file:
 
-1. Copy the example configuration file:
+1. Copy the example configuration file and modify accordingly (comment functionalities you do not need or change configuration):
    ```bash
    cp kc868-a6.example.yaml kc868-a6.yaml
    ```
 
-2. Edit the configuration file to set your Wi-Fi credentials, API key, and passwords:
-   ```yaml
-   # WiFi Configuration
-   wifi:
-     ssid: "YOUR_WIFI_SSID"
-     password: "YOUR_WIFI_PASSWORD"
-     
-     # Fallback hotspot
-     ap:
-       ssid: "KC868-A6 Fallback"
-       password: "YOUR_FALLBACK_PASSWORD"
-   
-   # API encryption key
-   api:
-     encryption:
-       key: "YOUR_32_BYTE_ENCRYPTION_KEY"
-   
-   # OTA password
-   ota:
-     password: "YOUR_OTA_PASSWORD"
-
+2. Edit the secrets file to set your Wi-Fi credentials, API key, and passwords
+   ```bash
+   cp secrets-example.yaml secrets.yaml
+   ```
 
 ### Flashing
 
@@ -108,6 +94,45 @@ After flashing the firmware:
 4. Search for and select "ESPHome"
 5. Enter the IP address of your KC868-A6 device
 6. The device should be automatically discovered and added to your Home Assistant instance
+
+## Integration with MQTT broker
+
+If MQTT section is active in configuration yaml file the device will broadcast states to MQTT broker:
+(here we can see topics populated via MQTT Explorer)
+
+![image](https://github.com/user-attachments/assets/8dd168fd-2ff5-4e32-8ccf-2ed83bd9d0e1)
+
+
+## Controlling via web browser
+
+![kincony portal](https://github.com/user-attachments/assets/978eb436-726e-4aa1-ba99-188ef9764f5c)
+
+## OTA updates
+
+These can be done via:
+* cmdline (esphome)
+* esphome dashboard
+* web browser hosted by device (select firmware.ota.bin and upload directly)
+
+### Location of firmware file
+When running esphome check output in cmdline:
+``` bash
+Building .pioenvs\kc868-a6\firmware.bin
+esptool.py v4.4
+Creating esp32 image...
+Merged 25 ELF sections
+Successfully created esp32 image.
+esp32_create_combined_bin([".pioenvs\kc868-a6\firmware.bin"], [".pioenvs\kc868-a6\firmware.elf"])
+esptool.py v4.7.0
+Wrote 0x12caf0 bytes to file D:\esp\Kincony\.esphome\build\kc868-a6\.pioenvs\kc868-a6/firmware.factory.bin, ready to flash to offset 0x0
+esp32_copy_ota_bin([".pioenvs\kc868-a6\firmware.bin"], [".pioenvs\kc868-a6\firmware.elf"])
+```
+
+In this case it saved OTA firmware file to:
+``` bash
+D:\esp\Kincony\.esphome\build\kc868-a6\.pioenvs\kc868-a6\firmware.ota.bin
+```
+
 
 ## Pin Configuration
 
